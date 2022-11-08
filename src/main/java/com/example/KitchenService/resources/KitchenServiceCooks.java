@@ -61,7 +61,7 @@ public class KitchenServiceCooks implements Runnable {
         // create an entity which encapsulated the body (order) and the header of http request
         HttpEntity<Order> entity = new HttpEntity<>(order, headers);
         // send current order to kitchen
-         restTemplate.postForEntity("http://localhost:8080/hall/order", entity, Order.class);
+         restTemplate.postForEntity("http://localhost:8083/server3/orderKitchen", entity, Order.class);
     }
 
     public static void addOrder(Order order) {

@@ -18,7 +18,7 @@ public class KitchenServiceController {
 
     @PostMapping("kitchen/order")
     public ResponseEntity postOrder(@RequestBody Order order){
-        logger.info("Order with id: " + order.getId() + "; items : " + order.getItems() + "; maximum wait: " + order.getMax_wait() + "; priority : "+ order.getPriority() + "; was received by kitchen");
+        logger.info("Order with id: " + order.getId() + " was received by kitchen");
         KitchenServiceCooks.addOrder(order);
         return new ResponseEntity(HttpStatus.OK);
     }
