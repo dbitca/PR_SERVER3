@@ -19,6 +19,9 @@ public class WorkingThreads implements Runnable {
     public static final ReentrantLock mutex = new ReentrantLock();
     public static BlockingQueue<Object> objects = new LinkedBlockingQueue<>();
     static HttpHeaders headers = new HttpHeaders();
+    private static int minQueue = 3;
+    private static int maxQueue = 10;
+    private static boolean SignalSent = false;
 
     private static RestTemplate restTemplate = new RestTemplate();
 
@@ -36,9 +39,15 @@ public class WorkingThreads implements Runnable {
             try {
                 if (objects.size() > 0) {
                     var object = objects.take();
+                    System.out.println("Object queue size :" + objects.size());
+                    if (objects.size() <= minQueue && SignalSent){
+                        SignalSent = false;
+                        SendSignal(false);
+                    }
+                    System.out.println("Value of signal :" + SignalSent);
                     sendObject(object);
-                    Thread.sleep(500);
-                    System.out.println("Capacity of queue " + objects.size());
+                    Thread.sleep(3000);
+                    //System.out.println("Capacity of queue " + objects.size());
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException();
@@ -56,11 +65,25 @@ public class WorkingThreads implements Runnable {
         HttpEntity<Object> entity = new HttpEntity<>(object, headers);
         // send current order to kitchen
         restTemplate.postForEntity("http://localhost:8083/agregator/objectConsumer", entity, Object.class);
-        System.out.println("Object sent to agregator");
+        //System.out.println("Object sent to agregator");
     }
 
     public static void addObject(Object object) {
         // add incoming order to queue
         objects.add(object);
+        if (objects.size() >= maxQueue && !SignalSent){
+            SignalSent = true;
+            System.out.println("S-a setat valoarea true la semnal");
+            SendSignal(true);
+        }
+    }
+
+    public static void SendSignal (boolean signal){
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        HttpEntity<Boolean> entity = new HttpEntity<>(signal, headers);
+        restTemplate.postForEntity("http://localhost:8080/producer/signal", entity, Boolean.class);
+        System.out.println("S-a trimis semnal de tip " + signal);
     }
 }

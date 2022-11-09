@@ -15,7 +15,7 @@ public class ConsumerController {
     @PostMapping("/object")
     public ResponseEntity postObject(@RequestBody Object object){
         Logger logger = LoggerFactory.getLogger(ConsumerController.class);
-        logger.info("Object with id: " + object.getId() + " was received by consumer");
+        logger.info("Object with id: " + object.getId() + " was received by consumer from aggregator");
         WorkingThreads.addObject(object);
         return new ResponseEntity(HttpStatus.OK);
     }

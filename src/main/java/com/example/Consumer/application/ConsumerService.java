@@ -6,7 +6,7 @@ public class ConsumerService {
     public static void InitializeWorkingThreads() {
         try {
             for (int i = 0; i < 6; i++) {
-                new WorkingThreads("Cook " + String.valueOf(i));
+                new WorkingThreads("ConsumerThread " + String.valueOf(i));
             }
             Thread.sleep(1000);
         } catch (InterruptedException e) {
